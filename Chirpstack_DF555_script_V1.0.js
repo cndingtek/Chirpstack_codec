@@ -44,7 +44,7 @@ switch (test_mode) {
 }
 //var ret =decodeDownlink(Input);
 //var ret = encodeDownlink(downlink);
-console.log(ret);
+//console.log(ret);
 //Test part Ending
 
 

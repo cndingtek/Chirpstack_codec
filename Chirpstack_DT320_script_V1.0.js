@@ -30,7 +30,7 @@ let downlink= {
 //var units = [' ℃', ' hours', ' minutes', ' mm', ' °', ' cm'];
 //var ret =decodeDownlink(Input);
 var ret = encodeDownlink(downlink);
-console.log(ret);
+//console.log(ret);
 //IEEE754 hex to float convert
 function hex2float(num) {
     var sign = num & 0x80000000 ? -1 : 1;
