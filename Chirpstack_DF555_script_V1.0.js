@@ -1,55 +1,48 @@
-// Version 1.3, Date:20221022
-// Decode an uplink message from a buffer
-// payload - array of bytes
-// metadata - key/value object
-//Test part beginning
-let Input = {
-    fPort: 3,
-    //bytes: [0x80, 0x00, 0x01, 0x03, 0x11, 0x01, 0x04, 0x18, 0x01, 0x1E, 0x4B, 0x1E, 0x01, 0x02, 0x00, 0x00, 0x81],
-    //bytes: [0x80, 0x00, 0x20, 0x03, 0x0C, 0x00, 0x00, 0x04, 0x1e, 0x01, 0x01, 0x81],
-    bytes: [0x38, 0x30, 0x30, 0x32, 0x39, 0x39, 0x39, 0x39, 0x30, 0x39, 0x30, 0x32, 0x38, 0x31],
-    variables: {}
-};
-
-let downlink = {
-    data: {
-        workMode: 2
-    }
-};
-// Version 1.0, Date:20221105
-
-// Decode uplink function.
-//
-// Input is an object with the following fields:
-// - bytes = Byte array containing the uplink payload, e.g. [255, 230, 255, 0]
-// - fPort = Uplink fPort.
-// - variables = Object containing the configured device variables.
-//
-// Output must be an object with the following fields:
-// - data = Object representing the decoded payload.
-//var units = [' ℃', ' hours', ' minutes', ' mm', ' °', ' cm'];
-var test_mode = 3;
+/***********************************************************************************************************
+ * CNDINGTEK Ultrasonic Level sensor DF555 Codec for Chirpstack/TTN(The Things Network).
+ * Version 1.3  Date 2022-10-22
+ * 
+ * Below is for testing purpose.Not need to put into chirpstack backend.
+ * 
+ ***********************************************************************************************************/
+/*var test_mode = 2;
+let Input = {};
+let downlink = {};
 switch (test_mode) {
     case 1:
+        Input = {
+            fPort: 3,
+            //bytes: [0x80, 0x00, 0x01, 0x01, 0x11, 0x02, 0x4C, 0x01, 0x19,0x01,0x46, 0x4B, 0x01, 0x00, 0x01, 0x00, 0x81],
+            bytes: [0x80, 0x00, 0x01, 0x03, 0x0D, 0x01, 0x02, 0x18, 0x1E, 0x14, 0x0A, 0x00, 0x81],
+            variables: {}
+        };
         var ret = decodeUplink(Input);
         break;
     case 2:
+        Input = {
+            fPort: 3,
+            bytes: [0x38, 0x30, 0x30, 0x32, 0x39, 0x39, 0x39, 0x39, 0x30, 0x39, 0x30, 0x31, 0x38, 0x31],
+            variables: {}
+        };
         var ret = decodeDownlink(Input);
         break;
     case 3:
+        downlink = {
+            data: {
+                levelThreshold: 100
+            }
+        };
         var ret = encodeDownlink(downlink);
         break;
     default:
         break;
 }
-//var ret =decodeDownlink(Input);
-//var ret = encodeDownlink(downlink);
-//console.log(ret);
-//Test part Ending
-
-
-
-//Below is the useful part for Codec
+console.log(ret);*/
+/************************************************************************************
+ * 
+ * Below are functions for codec which should put into Chirpstack backend.
+ *   
+ * *********************************************************************************/
 //IEEE754 hex to float convert
 function hex2float(num) {
     var sign = num & 0x80000000 ? -1 : 1;

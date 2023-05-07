@@ -1,37 +1,50 @@
-// Version 1.0, Date:2022105
-// Decode an uplink message from a buffer
-// payload - array of bytes
-// metadata - key/value object
+/***********************************************************************************************************
+ * CNDINGTEK Air Temperature/Humidity Sensor DT311 Codec for Chirpstack/TTN(The Things Network).
+ * Version 1.0  Date 2022-1-5
+ * 
+ * Below is for testing purpose.Not need to put into chirpstack backend.
+ * 
+ ***********************************************************************************************************/
+/*var test_mode = 2;
+let Input = {};
+let downlink = {};
+switch (test_mode) {
+    case 1:
+        Input = {
+            fPort: 3,
+            //bytes: [0x80,0x00,0x02,0x02,0x15,0x06,0x55,0x00,0x00,0x01,0x6B,0xFF,0xFC,0xFF,0xF5,0xFF,0xF4,0x00,0x00,0x00,0x81],
+            //bytes: [0x80, 0x00, 0x01, 0x02, 0x0D, 0x01, 0x02, 0x18, 0x0A, 0x14, 0x19, 0x00, 0x81],
+            bytes: [0x80,0x00,0x02,0x03,0x11,0x00,0x0B,0x18,0x02,0x0A,0x05,0xA0,0x00,0x3C,0x00,0x00,0x81],
+            variables: {}
+        };
+        var ret = decodeUplink(Input);
+        break;
+    case 2:
+        Input = {
+            fPort: 3,
+            bytes: [0x38, 0x30, 0x30, 0x32, 0x38, 0x38, 0x38, 0x38, 0x30, 0x35, 0x30, 0x33, 0x38, 0x31],
+            variables: {}
+        };
+        var ret = decodeDownlink(Input);
+        break;
+    case 3:
+        downlink = {
+            data: {
+                ultraDetectionInterval: 10
+            }
+        };
+        var ret = encodeDownlink(downlink);
+        break;
+    default:
+        break;
+}
 
-let Input = {
-    fPort: 3,
-    bytes: [0x80, 0x00, 0x01, 0x02, 0x12, 0x01, 0x8b, 0x00, 0x00, 0x16, 0x71, 0x42, 0x68, 0x00, 0x00, 0x00, 0x18, 0x81],
-    //bytes: [0x80, 0x00, 0x20, 0x03, 0x12, 0x01, 0x01, 0x04, 0x1e, 0x00, 0x55, 0x01, 0x1e,0x5a, 0x00,0x00,0x14,0x81],
-    //bytes: [0x38, 0x30, 0x30, 0x32, 0x39, 0x39, 0x39, 0x39, 0x30, 0x45, 0x30, 0x36, 0x30, 0x32, 0x38, 0x31],
-    variables: {}
-};
-
-let downlink = {
-    data: {
-        uploadInterval: 20
-    }
-};
-// Version 1.0, Date:20221105
-
-// Decode uplink function.
-//
-// Input is an object with the following fields:
-// - bytes = Byte array containing the uplink payload, e.g. [255, 230, 255, 0]
-// - fPort = Uplink fPort.
-// - variables = Object containing the configured device variables.
-//
-// Output must be an object with the following fields:
-// - data = Object representing the decoded payload.
-//var units = [' ℃', ' hours', ' minutes', ' mm', ' °', ' cm'];
-//var ret = decodeUplink(Input);
-//var ret = decodeDownlink(Input);
-var ret = encodeDownlink(downlink);
-//console.log(ret);
+console.log(ret);*/
+/************************************************************************************
+ * 
+ * Below are functions for codec which should put into Chirpstack backend.
+ *   
+ * *********************************************************************************/
 //IEEE754 hex to float convert
 function hex2float(num) {
     var sign = num & 0x80000000 ? -1 : 1;

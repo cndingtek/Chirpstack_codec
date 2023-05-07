@@ -1,19 +1,19 @@
 /***********************************************************************************************************
- * CNDINGTEK Tissue Level Sensor DF400 Codec for Chirpstack/TTN(The Things Network).
- * Version 1.0  Date 2022-12-3
+ * CNDINGTEK People Counter DC500 Codec for Chirpstack/TTN(The Things Network).
+ * Version 1.0  Date 2023-5-7
  * 
  * Below is for testing purpose.Not need to put into chirpstack backend.
  * 
  ***********************************************************************************************************/
-/*var test_mode = 2;
+/*var test_mode = 1;
 let Input = {};
 let downlink = {};
 switch (test_mode) {
     case 1:
         Input = {
             fPort: 3,
-            //bytes: [0x80, 0x00, 0x01, 0x01, 0x11, 0x02, 0x4C, 0x01, 0x19,0x01,0x46, 0x4B, 0x01, 0x00, 0x01, 0x00, 0x81],
-            bytes: [0x80, 0x00, 0x01, 0x03, 0x0D, 0x01, 0x02, 0x18, 0x1E, 0x14, 0x0A, 0x00, 0x81],
+            bytes: [0x80, 0x00, 0x01, 0x03, 0x0C, 0x01, 0x03, 0x04, 0x01, 0xF4, 0x1E, 0x81],
+            //bytes: [0x80,0x00,0x02,0x01,0x15,0x01,0x01,0x01,0x00,0x01,0x6F,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x81],            
             variables: {}
         };
         var ret = decodeUplink(Input);
@@ -21,7 +21,7 @@ switch (test_mode) {
     case 2:
         Input = {
             fPort: 3,
-            bytes: [0x38, 0x30, 0x30, 0x32, 0x39, 0x39, 0x39, 0x39, 0x30, 0x39, 0x30, 0x31, 0x38, 0x31],
+            bytes: [0x38, 0x30, 0x30, 0x32, 0x39, 0x39, 0x39, 0x39, 0x30, 0x39, 0x30, 0x46, 0x38, 0x31],
             variables: {}
         };
         var ret = decodeDownlink(Input);
@@ -29,7 +29,7 @@ switch (test_mode) {
     case 3:
         downlink = {
             data: {
-                levelThreshold: 100
+                reset: 1
             }
         };
         var ret = encodeDownlink(downlink);
@@ -37,6 +37,7 @@ switch (test_mode) {
     default:
         break;
 }
+
 console.log(ret);*/
 /************************************************************************************
  * 
@@ -58,28 +59,25 @@ function decodeUplink(input) {
         };
     }
     switch (input.bytes.length) {
-        case 17:
+        case 21:
             return {
                 // Decoded data
                 data: {
-                    level: (input.bytes[9] << 8) + input.bytes[10],
-                    percent: (input.bytes[11]),
-                    alarmLevel: Boolean(input.bytes[12] & 0x0f),
-                    alarmBattery: Boolean(input.bytes[7] & 0x0f),
-                    temperature: input.bytes[8],
-                    volt: ((input.bytes[5] << 8) + input.bytes[6]) / 100,
-                    frameCounter: (input.bytes[13] << 8) + input.bytes[14],
+                    peopleCounter: ((input.bytes[5] << 8) + input.bytes[6]),
+                    alarmCounter: Boolean(input.bytes[7] & 0xF0),
+                    alarmBattery: Boolean(input.bytes[7] & 0x0F),                    
+                    volt: ((input.bytes[9] << 8) + input.bytes[10]) / 100,
+                    frameCounter: (input.bytes[17] << 8) + input.bytes[18],
                 },
             };
-        case 13:
+        case 12:
             return {
                 // Decoded data
                 data: {
                     firmware: input.bytes[5] + "." + input.bytes[6],
                     uploadInterval: input.bytes[7],
-                    detectInterval: input.bytes[8],
-                    batteryThreshold: input.bytes[9],
-                    levelThreshold: input.bytes[10],
+                    batteryThreshold: input.bytes[10],
+                    peopleCounterThreshold: (input.bytes[8] << 8) + input.bytes[9],
                 },
             };
         default:
@@ -102,9 +100,9 @@ function encodeDownlink(input) {
         var uploadInterval = input.data.uploadInterval;
         var uploadInterval_high = uploadInterval.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
         var uploadInterval_low = uploadInterval.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
-        if (uploadInterval > 255 || uploadInterval < 1) {
+        if (uploadInterval > 168 || uploadInterval < 1) {
             return {
-                errors: ['upload interval range 1-255 hours.'],
+                errors: ['upload interval range 1-168 hours.'],
             };
         } else {
             return {
@@ -115,40 +113,26 @@ function encodeDownlink(input) {
             };
         }
     }
-    if (input.data.detectInterval != null && !isNaN(input.data.detectInterval)) {
-        var detectInterval = input.data.detectInterval;
-        var detectInterval_high = detectInterval.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
-        var detectInterval_low = detectInterval.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
-        if (detectInterval > 255 || detectInterval < 1) {
+    if (input.data.peopleCounterThreshold != null && !isNaN(input.data.peopleCounterThreshold)) {
+        var peopleCounterThreshold = input.data.peopleCounterThreshold;
+        var peopleCounter_1st = peopleCounterThreshold.toString(16).padStart(4, '0').toUpperCase()[0].charCodeAt(0);
+        var peopleCounter_2nd = peopleCounterThreshold.toString(16).padStart(4, '0').toUpperCase()[1].charCodeAt(0);
+        var peopleCounter_3rd = peopleCounterThreshold.toString(16).padStart(4, '0').toUpperCase()[2].charCodeAt(0);
+        var peopleCounter_4th = peopleCounterThreshold.toString(16).padStart(4, '0').toUpperCase()[3].charCodeAt(0);
+        if (peopleCounterThreshold > 65535 || peopleCounterThreshold < 1) {
             return {
-                errors: ['detection interval range 1-255 minutes.'],
+                errors: ['people counter range 1-65535.'],
             };
         } else {
             return {
                 // LoRaWAN FPort used for the downlink message
                 fPort: 3,
                 // Encoded bytes
-                bytes: [0x38, 0x30, 0x30, 0x32, 0x39, 0x39, 0x39, 0x39, 0x30, 0x38, detectInterval_high, detectInterval_low, 0x38, 0x31],
+                bytes: [0x38, 0x30, 0x30, 0x32, 0x39, 0x39, 0x39, 0x39, 0x30, 0x32, peopleCounter_1st, peopleCounter_2nd, peopleCounter_3rd, peopleCounter_4th, 0x38, 0x31],
             };
         }
     }
-    if (input.data.levelThreshold != null && !isNaN(input.data.levelThreshold)) {
-        var levelThreshold = input.data.levelThreshold;
-        var levelThreshold_high = levelThreshold.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
-        var levelThreshold_low = levelThreshold.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
-        if (levelThreshold > 99 || levelThreshold < 1) {
-            return {
-                errors: ['level alarm threshold range 1-99,unit %.'],
-            };
-        } else {
-            return {
-                // LoRaWAN FPort used for the downlink message
-                fPort: 3,
-                // Encoded bytes
-                bytes: [0x38, 0x30, 0x30, 0x32, 0x39, 0x39, 0x39, 0x39, 0x30, 0x32, levelThreshold_high, levelThreshold_low, 0x38, 0x31],
-            };
-        }
-    }
+
     if (input.data.batteryThreshold != null && !isNaN(input.data.batteryThreshold)) {
         var batteryThreshold = input.data.batteryThreshold;
         var batteryThreshold_high = batteryThreshold.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
@@ -166,6 +150,21 @@ function encodeDownlink(input) {
             };
         }
     }
+    if (input.data.zeroPeopleCounter != null && !isNaN(input.data.zeroPeopleCounter)) {
+        var zeroPeopleCounter = input.data.zeroPeopleCounter;
+        if (zeroPeopleCounter != 1) {
+            return {
+                errors: ['zero people counter: 1.'],
+            };
+        } else {
+            return {
+                // LoRaWAN FPort used for the downlink message
+                fPort: 3,
+                // Encoded bytes
+                bytes: [0x38, 0x30, 0x30, 0x32, 0x39, 0x39, 0x39, 0x39, 0x30, 0x39, 0x30, 0x46, 0x38, 0x31],
+            };
+        }
+    }    
     return {
         errors: ['invalid downlink parameter.'],
     };
@@ -197,7 +196,10 @@ function decodeDownlink(input) {
         };
     }
     var option = parseInt(String.fromCharCode(input.bytes[8]) + String.fromCharCode(input.bytes[9]), 16);
-    var value = parseInt(String.fromCharCode(input.bytes[10]) + String.fromCharCode(input.bytes[11]), 16);
+    if (input_length == 16)
+        var value = parseInt(String.fromCharCode(input.bytes[10]) + String.fromCharCode(input.bytes[11]) + String.fromCharCode(input.bytes[12]) + String.fromCharCode(input.bytes[13]), 16);
+    else
+        var value = parseInt(String.fromCharCode(input.bytes[10]) + String.fromCharCode(input.bytes[11]), 16);
     switch (option) {
         case 1:
             return {
@@ -208,7 +210,7 @@ function decodeDownlink(input) {
         case 2:
             return {
                 data: {
-                    levelThreshold: value,
+                    peopleCounterThreshold: value,
                 },
             };
         case 5:
@@ -217,15 +219,15 @@ function decodeDownlink(input) {
                     batteryThreshold: value,
                 },
             };
-        case 8:
-            return {
-                data: {
-                    detectInterval: value,
-                },
-            };
 
         case 9:
             switch (value) {                
+                case 0x0F:
+                    return {
+                        data: {
+                            zeroPeopleCounter: 1,
+                        },
+                    };
                 default:
                     return {
                         errors: ['invalid parameter value.'],

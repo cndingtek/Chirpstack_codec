@@ -5,7 +5,7 @@
  * Below is for testing purpose.Not need to put into chirpstack backend.
  * 
  ***********************************************************************************************************/
-var test_mode = 2;
+/*var test_mode = 2;
 let Input = {};
 let downlink = {};
 switch (test_mode) {
@@ -39,7 +39,7 @@ switch (test_mode) {
         break;
 }
 
-console.log(ret);
+console.log(ret);*/
 /************************************************************************************
  * 
  * Below are functions for codec which should put into Chirpstack backend.
