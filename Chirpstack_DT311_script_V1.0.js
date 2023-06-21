@@ -65,11 +65,12 @@ function decodeUplink(input) {
             var temp_sign = input.bytes[8];
             var temp_abs = (input.bytes[9] >> 4) * 10 + (input.bytes[9] & 0x0F) + (input.bytes[10] >> 4) / 10 + (input.bytes[10] & 0x0F) / 100;
             var humi_abs = (input.bytes[11] >> 4) * 10 + (input.bytes[11] & 0x0F) + (input.bytes[12] >> 4) / 10 + (input.bytes[12] & 0x0F) / 100;
+            var temperature_temp=(temp_sign == 0 )? temp_abs : (0 - temp_abs);
             return {
                 // Decoded data
                 data: {
-                    temperature: temp_sign == 0 ? temp_abs : 0 - temp_abs,
-                    humidity: humi_abs,
+                    temperature: temperature_temp.toFixed(2),
+                    humidity: humi_abs.toFixed(2),
                     alarmHighTemperature: (input.bytes[13] & 0x10) ? true : false,
                     alarmLowTemperature: (input.bytes[13] & 0x01) ? true : false,
                     alarmHighHumidity: (input.bytes[14] & 0x10) ? true : false,
@@ -114,8 +115,7 @@ function decodeUplink(input) {
 function encodeDownlink(input) {
     if (input.data.uploadInterval != null && !isNaN(input.data.uploadInterval)) {
         var uploadInterval = input.data.uploadInterval;
-        var uploadInterval_high = uploadInterval.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
-        console.log(uploadInterval_high);
+        var uploadInterval_high = uploadInterval.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);        
         var uploadInterval_low = uploadInterval.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
         if (uploadInterval > 255 || uploadInterval < 1) {
             return {
@@ -172,24 +172,6 @@ function encodeDownlink(input) {
         var lowTemperatureThreshold_low = lowTemperatureThreshold.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
         if (input.data.lowTemperatureThreshold > 85 || input.data.lowTemperatureThreshold < -30) {
             return {
-                errors: ['High temperature alarm threshold range -30~+85.'],
-            };
-        } else {
-            return {
-                // LoRaWAN FPort used for the downlink message
-                fPort: 3,
-                // Encoded bytes
-                bytes: [0x38, 0x30, 0x30, 0x32, 0x39, 0x39, 0x39, 0x39, 0x30, 0x32, 0x30,lowTemperatureSign,lowTemperatureThreshold_high, lowTemperatureThreshold_low, 0x38, 0x31],
-            };
-        }
-    }
-    if (input.data.lowTemperatureThreshold != null && !isNaN(input.data.lowTemperatureThreshold)) {
-        var lowTemperatureThreshold = input.data.lowTemperatureThreshold<0?0-input.data.lowTemperatureThreshold:input.data.lowTemperatureThreshold;
-        var lowTemperatureSign=input.data.lowTemperatureThreshold<0?0x31:0x30;
-        var lowTemperatureThreshold_high = lowTemperatureThreshold.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
-        var lowTemperatureThreshold_low = lowTemperatureThreshold.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
-        if (input.data.lowTemperatureThreshold > 85 || input.data.lowTemperatureThreshold < -30) {
-            return {
                 errors: ['Low temperature alarm threshold range -30~+85.'],
             };
         } else {
@@ -201,6 +183,7 @@ function encodeDownlink(input) {
             };
         }
     }
+   
     if (input.data.highHumidityThreshold != null && !isNaN(input.data.highHumidityThreshold)) {
         var highHumidityThreshold = input.data.highHumidityThreshold<0?0-input.data.highHumidityThreshold:input.data.highHumidityThreshold;       
         var highHumidityThreshold_high = highHumidityThreshold.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);

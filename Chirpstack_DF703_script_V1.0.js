@@ -5,16 +5,16 @@
  * Below is for testing purpose.Not need to put into chirpstack backend.
  * 
  ***********************************************************************************************************/
-/*var test_mode = 1;
+var test_mode = 1;
 let Input = {};
 let downlink = {};
 switch (test_mode) {
     case 1:
         Input = {
             fPort: 3,
-            bytes: [0x80, 0x00, 0x01, 0x02, 0x19, 0x07, 0xD0, 0x01, 0xCD, 0x03, 0xE9, 0x42, 0xEF, 0x27, 0x20, 0x42, 0x19, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x81],
-            //bytes: [0x80, 0x00, 0x01, 0x02, 0x0D, 0x01, 0x02, 0x18, 0x0A, 0x14, 0x19, 0x00, 0x81],
-            //bytes: [0x38,0x30,0x30,0x32,0x39,0x39,0x39,0x39,0x30,0x31,0x30,0x31,0x38,0x31],
+            //bytes: [0x80, 0x00, 0x01, 0x02, 0x19, 0x07, 0xD0, 0x01, 0xCD, 0x03, 0xE9, 0x42, 0xEF, 0x27, 0x20, 0x42, 0x19, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x81],
+            //bytes: [0x80,0x00,0x01,0x01,0x11,0x07,0xD0,0x00,0x19,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x81],
+            bytes: [0x80,0x00,0x01,0x03,0x19,0x01,0x04,0x18,0x01,0x1E,0x4B,0x1E,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x81],
             variables: {}
         };
         var ret = decodeUplink(Input);
@@ -30,7 +30,7 @@ switch (test_mode) {
     case 3:
         downlink = {
             data: {
-                batteryThreshold: 4
+                uploadInterval: 4
             }
         };
         var ret = encodeDownlink(downlink);
@@ -39,7 +39,7 @@ switch (test_mode) {
         break;
 }
 
-console.log(ret);*/
+console.log(ret);
 /************************************************************************************
  * 
  * Below are functions for codec which should put into Chirpstack backend.
@@ -118,11 +118,11 @@ function decodeUplink(input) {
 }
 
 function encodeDownlink(input) {
-    if (input.data.periodic_upload_interval != null && !isNaN(input.data.periodic_upload_interval)) {
-        var periodic_interval = input.data.periodic_upload_interval;
-        var periodic_interval_high = periodic_interval.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
-        var periodic_interval_low = periodic_interval.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
-        if (periodic_interval > 168 || periodic_interval < 1) {
+    if (input.data.uploadInterval != null && !isNaN(input.data.uploadInterval)) {
+        var uploadInterval = input.data.uploadInterval;        
+        var uploadInterval_high = uploadInterval.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
+        var uploadInterval_low = uploadInterval.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
+        if (uploadInterval > 168 || uploadInterval < 1) {
             return {
                 errors: ['periodic upload interval range 1-168 hours.'],
             };
@@ -131,12 +131,12 @@ function encodeDownlink(input) {
                 // LoRaWAN FPort used for the downlink message
                 fPort: 3,
                 // Encoded bytes
-                bytes: [0x38, 0x30, 0x30, 0x32, 0x39, 0x39, 0x39, 0x39, 0x30, 0x31, periodic_interval_high, periodic_interval_low, 0x38, 0x31],
+                bytes: [0x38, 0x30, 0x30, 0x32, 0x39, 0x39, 0x39, 0x39, 0x30, 0x31, uploadInterval_high, uploadInterval_low, 0x38, 0x31],
             };
         }
     }
-    if (input.data.periodic_detection_interval != null && !isNaN(input.data.periodic_detection_interval)) {
-        var detection_interval = input.data.periodic_detection_interval;
+    if (input.data.detectInterval != null && !isNaN(input.data.detectInterval)) {
+        var detection_interval = input.data.detectInterval;
         var detection_interval_high = detection_interval.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
         var detection_interval_low = detection_interval.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
         if (detection_interval > 60 || detection_interval < 1) {
@@ -152,8 +152,8 @@ function encodeDownlink(input) {
             };
         }
     }
-    if (input.data.full_alarm_threshold != null && !isNaN(input.data.full_alarm_threshold)) {
-        var full_alarm_threshold = input.data.full_alarm_threshold;
+    if (input.data.levelThreshold != null && !isNaN(input.data.levelThreshold)) {
+        var full_alarm_threshold = input.data.levelThreshold;
         var full_alarm_threshold_high = full_alarm_threshold.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
         var full_alarm_threshold_low = full_alarm_threshold.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
         if (full_alarm_threshold > 255 || full_alarm_threshold < 15) {
@@ -187,8 +187,8 @@ function encodeDownlink(input) {
         }
     }
 
-    if (input.data.motion_alarm_threshold != null && !isNaN(input.data.motion_alarm_threshold)) {
-        var tilt_alarm_threshold = input.data.motion_alarm_threshold;
+    if (input.data.fallThreshold != null && !isNaN(input.data.fallThreshold)) {
+        var tilt_alarm_threshold = input.data.fallThreshold;
         var tilt_alarm_threshold_high = tilt_alarm_threshold.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
         var tilt_alarm_threshold_low = tilt_alarm_threshold.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
         if (tilt_alarm_threshold > 90 || tilt_alarm_threshold < 15) {
@@ -204,25 +204,9 @@ function encodeDownlink(input) {
             };
         }
     }
-    if (input.data.batteryThreshold != null && !isNaN(input.data.batteryThreshold)) {
-        var batteryThreshold = input.data.batteryThreshold;
-        var batteryThreshold_high = batteryThreshold.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
-        var batteryThreshold_low = batteryThreshold.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
-        if (batteryThreshold > 99 || batteryThreshold < 5) {
-            return {
-                errors: ['battery alarm threshold range 5-99 %.'],
-            };
-        } else {
-            return {
-                // LoRaWAN FPort used for the downlink message
-                fPort: 3,
-                // Encoded bytes
-                bytes: [0x38, 0x30, 0x30, 0x32, 0x39, 0x39, 0x39, 0x39, 0x30, 0x35, batteryThreshold_high, batteryThreshold_low, 0x38, 0x31],
-            };
-        }
-    }
-    if (input.data.motion_alarm_enable != null && input.data.motion_alarm_enable === !!input.data.motion_alarm_enable) {
-        var tilt_enable = input.data.motion_alarm_enable;
+    
+    if (input.data.fallEnable != null && input.data.fallEnable === !!input.data.fallEnable) {
+        var tilt_enable = input.data.fallEnable;
         if (tilt_enable === true) {
             return {
                 // LoRaWAN FPort used for the downlink message
@@ -370,4 +354,5 @@ function decodeDownlink(input) {
             };
     }
 }
+
 

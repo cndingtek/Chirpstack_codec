@@ -63,7 +63,7 @@ function decodeUplink(input) {
                 return {
                     // Decoded data
                     data: {
-                        monitorStatus: Boolean(input.bytes[11] & 0x01),
+                        monitorStatus: !Boolean(input.bytes[11] & 0x01),
                         alarmChannel1: !Boolean(input.bytes[12] & 0x10),
                         alarmChannel2: !Boolean(input.bytes[12] & 0x20),
                         alarmChannel3: !Boolean(input.bytes[12] & 0x40),
@@ -80,7 +80,7 @@ function decodeUplink(input) {
                         firmware: input.bytes[5] + "." + input.bytes[6],
                         uploadInterval: input.bytes[7],
                         batteryThreshold: input.bytes[11],
-                        monitorStatus: Boolean(input.bytes[12] & 0x01),
+                        monitorStatus: !Boolean(input.bytes[12] & 0x01),
                     },
                 };
             }

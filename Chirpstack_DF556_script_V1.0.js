@@ -76,7 +76,7 @@ function decodeUplink(input) {
                     errors: ['wrong length'],
                 };
             }
-        case 16:
+        case 17:
             if (input.bytes[3] == 0x03) {
                 return {
                     // Decoded data
@@ -85,8 +85,9 @@ function decodeUplink(input) {
                         uploadInterval: (input.bytes[7] << 8) + input.bytes[8],
                         detectInterval: input.bytes[9],
                         levelThreshold: input.bytes[10],
-                        batteryThreshold: input.bytes[13],
-                        workMode: input.bytes[14],
+                        density: (input.bytes[12] << 8) + input.bytes[13],
+                        batteryThreshold: input.bytes[14],
+                        workMode: input.bytes[15],
                     },
                 };
             } else {
@@ -141,6 +142,23 @@ function encodeDownlink(input) {
                 fPort: 3,
                 // Encoded bytes
                 bytes: [0x38, 0x30, 0x30, 0x32, 0x39, 0x39, 0x39, 0x39, 0x30, 0x31, uploadInterval3rd, uploadInterval2nd,uploadInterval1st,uploadInterval0zr, 0x38, 0x31],
+            };
+        }
+    }
+    if (input.data.detectInterval != null && !isNaN(input.data.detectInterval)) {
+        var detection_interval = input.data.detectInterval;
+        var detection_interval_high = detection_interval.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
+        var detection_interval_low = detection_interval.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
+        if (detection_interval > 60 || detection_interval < 1) {
+            return {
+                errors: ['cyclic detection interval range 1-60 minutes.'],
+            };
+        } else {
+            return {
+                // LoRaWAN FPort used for the downlink message
+                fPort: 3,
+                // Encoded bytes
+                bytes: [0x38, 0x30, 0x30, 0x32, 0x39, 0x39, 0x39, 0x39, 0x30, 0x38, detection_interval_high, detection_interval_low, 0x38, 0x31],
             };
         }
     }

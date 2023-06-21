@@ -67,8 +67,7 @@ function decodeUplink(input) {
                 // Decoded data
                 data: {
                     level: (input.bytes[5] << 8) + input.bytes[6],
-                    alarmLevel: Boolean(input.bytes[11] >> 4),
-                    alarmFire: Boolean(input.bytes[11] & 0x0f),
+                    alarmLevel: Boolean(input.bytes[11] >> 4),                    
                     alarmBattery: Boolean(input.bytes[12] & 0x0f),
                     volt: ((input.bytes[13] << 8) + input.bytes[14]) / 100,
                     frameCounter: (input.bytes[15] << 8) + input.bytes[16],
