@@ -5,7 +5,7 @@
  * Below is for testing purpose.Not need to put into chirpstack backend.
  * 
  ***********************************************************************************************************/
-var test_mode = 1;
+var test_mode = 3;
 let Input = {};
 let downlink = {};
 switch (test_mode) {
