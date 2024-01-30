@@ -111,7 +111,7 @@ function decodeUplink(input) {
 }
 
 function encodeDownlink(input) {
-    if (input.data.uploadInterval != null && !isNaN(input.data.uploadInterval)) {
+    if (input.data.uploadInterval !== null && !isNaN(input.data.uploadInterval)) {
         var periodic_interval = input.data.uploadInterval;
         var periodic_interval_high = periodic_interval.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
         var periodic_interval_low = periodic_interval.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
@@ -128,8 +128,8 @@ function encodeDownlink(input) {
             };
         }
     }
-    if (input.data.detectionInterval != null && !isNaN(input.data.detectionInterval)) {
-        var detection_interval = input.data.detectionInterval;
+    if (input.data.detectInterval !== null && !isNaN(input.data.detectInterval)) {
+        var detection_interval = input.data.detectInterval;
         var detection_interval_high = detection_interval.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
         var detection_interval_low = detection_interval.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
         if (detection_interval > 60 || detection_interval < 1) {
@@ -145,7 +145,7 @@ function encodeDownlink(input) {
             };
         }
     }
-    if (input.data.levelThreshold != null && !isNaN(input.data.levelThreshold)) {
+    if (input.data.levelThreshold !== null && !isNaN(input.data.levelThreshold)) {
         var levelThreshold = input.data.levelThreshold;
         var levelThreshold_high = levelThreshold.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
         var levelThreshold_low = levelThreshold.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
@@ -162,7 +162,7 @@ function encodeDownlink(input) {
             };
         }
     }
-    if (input.data.magnetThreshold != null && !isNaN(input.data.magnetThreshold)) {
+    if (input.data.magnetThreshold !== null && !isNaN(input.data.magnetThreshold)) {
         var magnetThreshold = input.data.magnetThreshold;
         var magnetThreshold_1 = magnetThreshold.toString(16).padStart(4, '0').toUpperCase()[0].charCodeAt(0);
         var magnetThreshold_2 = magnetThreshold.toString(16).padStart(4, '0').toUpperCase()[1].charCodeAt(0);
@@ -184,7 +184,7 @@ function encodeDownlink(input) {
 
     }
 
-    if (input.data.batteryThreshold != null && !isNaN(input.data.batteryThreshold)) {
+    if (input.data.batteryThreshold !== null && !isNaN(input.data.batteryThreshold)) {
         var batteryThreshold = input.data.batteryThreshold;
         var batteryThreshold_high = batteryThreshold.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
         var batteryThreshold_low = batteryThreshold.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
@@ -264,7 +264,7 @@ function decodeDownlink(input) {
         case 15:
             return {
                 data: {
-                    magDetectInterval: value2Bytes,
+                    magnetThreshold: value2Bytes,
                 },
             };
 

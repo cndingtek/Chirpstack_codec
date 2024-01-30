@@ -127,8 +127,8 @@ function encodeDownlink(input) {
             };
         }
     }
-    if (input.data.detectionInterval !== null && !isNaN(input.data.detectionInterval)) {
-        var detection_interval = input.data.detectionInterval;
+    if (input.data.detectInterval !== null && !isNaN(input.data.detectInterval)) {
+        var detection_interval = input.data.detectInterval;
         var detection_interval_high = detection_interval.toString(16).padStart(2, '0').toUpperCase()[0].charCodeAt(0);
         var detection_interval_low = detection_interval.toString(16).padStart(2, '0').toUpperCase()[1].charCodeAt(0);
         if (detection_interval > 60 || detection_interval < 1) {
@@ -242,7 +242,7 @@ function decodeDownlink(input) {
         case 15:
             return {
                 data: {
-                    magDetectInterval: value2Bytes,
+                    magnetThreshold: value2Bytes,
                 },
             };
 
